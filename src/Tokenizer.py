@@ -103,10 +103,10 @@ class TokenizerSentencePiece:
         self.model_type = model_type
         self.max_length = max_length
         self.pad_id = 0
-        self.bos_id = 1
-        self.eos_id = 2
-        self.unk_id = 3
-
+        self.unk_id = 1
+        self.bos_id = 2
+        self.eos_id = 3
+        
         self.sp_ = None
         self._tmp_prefix_ = None
 

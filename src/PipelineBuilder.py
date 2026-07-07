@@ -9,7 +9,8 @@ import time
 
 class Pipeline(BaseEstimator):
     def __init__(self, lowercase=None, tokenizer_method="sentencepiece", min_freq=None, max_length=None, vocab_size=None,
-                 model_name="LSTM", embedding_dim=None, hidden_dim=None, num_layers=None, dropout=None, teacher_forcing=None, max_length_decoded=None,
+                 model_name="Transformer", embedding_dim=None, n_heads = None, num_encoder_layers=2, num_decoder_layers=2, dim_feed_forward=1024,
+                 hidden_dim=None, num_layers=None, dropout=None, teacher_forcing=None, max_length_decoded=None,
                  optimizer=None, lr=None, epochs=None, batch_size=None, criterion=None, random_state=42, device=None):
         
         # data cleaner hyper-parameters
@@ -25,6 +26,11 @@ class Pipeline(BaseEstimator):
         
         # model hyper-parameters
         self.model_name = model_name
+        # Transformer
+        self.n_heads = n_heads
+        self.num_encoder_layers = num_encoder_layers
+        self.num_decoder_layers = num_decoder_layers
+        self.dim_feed_forward = dim_feed_forward
         # LSTM
         self.embedding_dim = embedding_dim
         self.hidden_dim = hidden_dim
@@ -117,7 +123,14 @@ class Pipeline(BaseEstimator):
     
 
     def get_model_params(self):
-        if(self.model_name in ["LSTM"]):
+        if(self.model_name == "Transformer"):
+            keys = ["embedding_dim", "n_heads", "num_encoder_layers", "num_decoder_layers", "dim_feed_forward", "dropout", "max_length_decoded"]
+            params = self._get_subset_params(keys)
+            params["vocab_size_src"] = self.tokenizer_src_.vocab_size_
+            params["vocab_size_target"] = self.tokenizer_target_.vocab_size_
+            return params
+        
+        elif(self.model_name == "LSTM"):
             keys = ["embedding_dim", "hidden_dim", "num_layers", "dropout", "teacher_forcing", "max_length_decoded"]
             params = self._get_subset_params(keys)
             params["vocab_size_src"] = self.tokenizer_src_.vocab_size_
